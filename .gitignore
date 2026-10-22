@@ -1,0 +1,58 @@
+# ===== General (aplica a todos los proyectos) =====
+
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# Java / Maven / Gradle
+target/
+build/
+out/
+.gradle/
+*.class
+*.log
+
+# .NET / C#
+bin/
+obj/
+*.user
+.vs/
+
+# Node
+node_modules/
+dist/
+
+# Secretos y configuración local: NUNCA al repositorio
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+secrets*.json
+cookies*.txt
+cookies*.json
+storage_state*.json
+
+# Configuración local de agentes (la compartida sí se sube)
+.claude/settings.local.json

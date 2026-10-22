@@ -1,0 +1,8 @@
+# Entorno local
+.venv/
+__pycache__/
+
+# Material descargado del aula virtual: contenido del profesorado y datos
+# privados del aula (URLs internas, registro.json). Solo uso personal, no se publica.
+materiales/
+materiales-*/

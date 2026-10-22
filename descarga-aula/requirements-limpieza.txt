@@ -1,0 +1,4 @@
+-r requirements.txt
+pymupdf>=1.26,<2
+pillow>=11,<13
+markdown-it-py>=3,<5
