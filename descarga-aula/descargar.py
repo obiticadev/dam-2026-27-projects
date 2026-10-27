@@ -22,7 +22,9 @@ SUPPORTED = {"resource", "page", "book", "folder", "url"}
 
 def safe_name(value: str) -> str:
     value = unicodedata.normalize("NFC", value)
-    value = re.sub(r'[<>:"/\\|?*\x00-\x1f]', "_", value).strip(" .")[:90]
+    # Recortar antes de limpiar los extremos: Windows elimina espacios y puntos
+    # finales al crear carpetas y la ruta guardada dejaría de existir.
+    value = re.sub(r'[<>:"/\\|?*\x00-\x1f]', "_", value)[:90].strip(" .")
     if not value:
         return "sin-titulo"
     if value.split(".")[0].upper() in {"CON", "PRN", "AUX", "NUL", *(f"COM{i}" for i in range(1, 10)), *(f"LPT{i}" for i in range(1, 10))}:
@@ -102,9 +104,11 @@ class Exporter:
                 raise RuntimeError(f"HTTP {status}: {url}")
             body = response.body()
             response.dispose()
-            if "text/html" in headers.get("content-type", ""):
+            # Los archivos subidos (pluginfile.php) son material del profesorado y pueden
+            # contener ejemplos de login; si la sesión caduca, Moodle redirige a /login/.
+            if "text/html" in headers.get("content-type", "") and "/pluginfile.php/" not in urlsplit(url).path:
                 check = BeautifulSoup(body, "html.parser")
-                if check.select_one('input[name="password"], #login'):
+                if check.select_one('input[name="password"], input[name="logintoken"], form#login'):
                     raise RuntimeError("Se ha recibido la página de acceso; inicia sesión de nuevo")
             return url, headers, body
         raise RuntimeError("Demasiadas redirecciones")

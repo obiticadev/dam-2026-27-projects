@@ -122,6 +122,38 @@ class ExportTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'página de acceso'):
                 exporter.fetch(exporter.course)
 
+    def test_truncated_name_has_no_trailing_space(self):
+        title = 'Del diseño repetitivo al uso de Estilos Locales, Globales e Implícitos aplicado a botones Archivo'
+        name = safe_name(title)
+        self.assertLessEqual(len(name), 90)
+        self.assertEqual(name, name.strip(' .'))
+
+    def test_teacher_material_with_login_example_is_not_login_page(self):
+        body = b'<html><section id="login"><h2>Ejemplo: Login</h2></section></html>'
+
+        class Response:
+            status = 200
+            ok = True
+            headers = {'content-type': 'text/html'}
+
+            def body(self):
+                return body
+
+            def dispose(self):
+                pass
+
+        class Request:
+            def get(self, url, **kwargs):
+                return Response()
+
+        class Context:
+            request = Request()
+
+        with tempfile.TemporaryDirectory() as temp:
+            exporter = Exporter(Context(), 'https://a/course/view.php?id=929', Path(temp), 0)
+            for url in ('https://a/pluginfile.php/1/mod_resource/content/1/Cambio.html', exporter.course):
+                self.assertEqual(exporter.fetch(url)[2], body)
+
 
 if __name__ == '__main__':
     unittest.main()
